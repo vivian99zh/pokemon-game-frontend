@@ -1,2 +1,18 @@
+@layer theme, base, components, utilities, mui;
 @import 'tailwindcss';
-@plugin "daisyui";
+
+@theme inline {
+  --color-primary: var(--color-indigo-500);
+  --color-secondary: var(--color-blue-500);
+  --color-tertiary: var(--color-green-500);
+  --color-success: var(--color-green-500);
+  --color-error: var(--color-red-500);
+  --color-info: var(--color-orange-400);
+  --color-surface: var(--color-surface);
+  --color-gray-light: var(--color-gray-400);
+  --color-gray-base: var(--color-gray-600);
+  --color-gray-dark: var(--color-gray-800);
+  --color-gradient-primary: linear-gradient(90deg, var(--color-primary), var(--color-success));
+  --color-gradient-secondary: linear-gradient(90deg, var(--color-primary), var(--color-tertiary));
+  --color-gradient-tertiary: linear-gradient(90deg, var(--color-success), var(--color-tertiary));
+}
