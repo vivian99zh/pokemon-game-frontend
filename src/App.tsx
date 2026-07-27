@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/pokemon/:id" element={<PokemonDetails />} />
-          <Route path="/leader-board" element={<LeaderBoard />} />
+          <Route path="/leaderboard" element={<LeaderBoard />} />
           <Route
             path="/battle"
             element={

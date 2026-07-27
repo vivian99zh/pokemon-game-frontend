@@ -1,4 +1,5 @@
 import colors from 'tailwindcss/colors';
+import type { PokemonDetail } from '../schemas';
 
 export type AuthContextType = {
   isAuthenticated: boolean;
@@ -20,7 +21,28 @@ export type NavItem = {
   action?: () => void;
 };
 
-export const TYPE_COLORS: Record<string, string> = {
+export type PokemonCardProps = {
+  pokemon: PokemonDetail;
+  onClick?: () => void;
+  className?: string;
+};
+
+export type PokemonListProps = {
+  showOnlyRoster?: boolean;
+  title?: string;
+  icon?: React.ReactNode;
+  hidePagination?: boolean;
+  emptyMessage?: string;
+  showSnackbar?: boolean;
+  fetchUrl?: string;
+};
+
+export type BattlePokemon = PokemonDetail & {
+  currentHp: number;
+  maxHp: number;
+};
+
+export const TYPE_COLORS = {
   normal: colors.stone[400],
   fire: colors.orange[500],
   water: colors.blue[500],

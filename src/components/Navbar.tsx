@@ -30,7 +30,7 @@ function Navbar({ window }: { window?: () => Window }) {
 
   const navItems: NavItem[] = [
     { label: 'Home', path: '/' },
-    { label: 'Leader Board', path: '/leader-board' }
+    { label: 'Leaderboard', path: '/leaderboard' }
   ];
   if (isAuthenticated) {
     navItems.push({ label: 'Battle', path: '/battle' });

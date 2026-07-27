@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { Box, Button } from '@mui/material';
-import { ArrowBack, Delete, Favorite } from '@mui/icons-material';
+import { ArrowBack, Delete, Refresh, Favorite } from '@mui/icons-material';
 import PokemonList from '../components/PokemonList';
 import { useRoster } from '../hooks/useRoster';
 
@@ -8,7 +8,7 @@ const MyRoster = () => {
   const navigate = useNavigate();
   const { clearRoster } = useRoster();
 
-  const handleReloadRoster = () => {
+  const handleRefreshRoster = () => {
     window.location.reload();
   };
 
@@ -26,18 +26,20 @@ const MyRoster = () => {
         <Button startIcon={<ArrowBack />} onClick={() => navigate('/')} variant="outlined" className="mt-10 mr-5">
           Back to Collection
         </Button>
-        <Button startIcon={<Delete />} onClick={() => handleReloadRoster()} variant="outlined" className="mt-10 mr-5">
-          Reload Roster
+        <Button startIcon={<Refresh />} onClick={() => handleRefreshRoster()} variant="outlined" className="mt-10 mr-5">
+          Refresh
         </Button>
         <Button startIcon={<Delete />} onClick={() => handleClearRoster()} variant="outlined" className="mt-10">
-          Clear Roster and back
+          Clear and back
         </Button>
       </Box>
+
       <PokemonList
         title="My Roster"
         icon={<Favorite className="text-error text-4xl" />}
         showOnlyRoster={true}
         showSnackbar={true}
+        hidePagination={true}
         emptyMessage="Start adding Pokémon to your roster!"
       />
     </Box>

@@ -2,16 +2,9 @@ import { Card, CardContent, Typography, Box, IconButton } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { CatchingPokemon, Height } from '@mui/icons-material';
 import ScaleIcon from '@mui/icons-material/Scale';
-import type { PokemonDetail } from '../schemas';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRoster } from '../hooks/useRoster';
-import { TYPE_COLORS as typeColors } from '../types';
-
-interface PokemonCardProps {
-  pokemon: PokemonDetail;
-  onClick?: () => void;
-  className?: string;
-}
+import { TYPE_COLORS as typeColors, type PokemonCardProps } from '../types';
 
 const PokemonCard = ({ pokemon, onClick }: PokemonCardProps) => {
   const { isAuthenticated } = useAuth();
@@ -43,7 +36,7 @@ const PokemonCard = ({ pokemon, onClick }: PokemonCardProps) => {
     >
       <CardContent>
         {/* Pokemon Image */}
-        <Box className="flex justify-center items-center bg-surface rounded-lg p-4 mb-4">
+        <Box className="flex justify-center items-center bg-gray-50 rounded-lg p-4 mb-4">
           <img
             src={sprite}
             alt={pokemon.name}
