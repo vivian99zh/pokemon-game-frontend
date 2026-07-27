@@ -1,4 +1,3 @@
-// src/components/PokemonList.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Typography, Alert, CircularProgress, Box, Snackbar, Pagination } from '@mui/material';
@@ -7,18 +6,9 @@ import { POKE_API_URL } from '../config';
 import { type PokemonDetail, pokemonDetailSchema, pokemonListResponseSchema } from '../schemas';
 import PokemonCard from './PokemonCard';
 import { useRoster } from '../hooks/useRoster';
+import type { PokemonListProps } from '../types';
 
 import type { SnackbarState } from '../types';
-
-interface PokemonListProps {
-  showOnlyRoster?: boolean;
-  title?: string;
-  icon?: React.ReactNode;
-  hidePagination?: boolean;
-  emptyMessage?: string;
-  showSnackbar?: boolean;
-  fetchUrl?: string;
-}
 
 const PokemonList = ({
   showOnlyRoster = false,
@@ -38,13 +28,35 @@ const PokemonList = ({
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const limit = 12;
+  const limit = 24;
 
   const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: '',
     severity: 'success'
   });
+
+  const renderPagination = () => {
+    const totalPages = Math.ceil((showOnlyRoster ? rosterCount : totalCount) / limit);
+    const currentPage = Math.floor(offset / limit) + 1;
+
+    if (hidePagination || totalPages <= 1) return null;
+
+    return (
+      <Box className="flex justify-center mt-8 pb-4">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          size="large"
+          showFirstButton
+          showLastButton
+          className="pokemon-pagination"
+        />
+      </Box>
+    );
+  };
 
   // Fetch Pokemon data - single useEffect
   useEffect(() => {
@@ -129,10 +141,6 @@ const PokemonList = ({
     setSnackbar({ ...snackbar, open: false });
   };
 
-  // Filter pokemon based on roster filter
-  const displayedPokemon = showOnlyRoster ? pokemon : pokemon;
-  const totalPages = Math.ceil((showOnlyRoster ? rosterCount : totalCount) / limit);
-
   if (loading) {
     return (
       <Box className="flex justify-center items-center h-64">
@@ -150,8 +158,7 @@ const PokemonList = ({
   }
 
   return (
-    <Box className="max-w-7xl mx-auto mt-15 px-4">
-      {/* Header */}
+    <Box className={`max-w-7xl mx-auto px-4 ${showOnlyRoster ? '' : 'mt-15'}`}>
       <Box className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 mt-10 gap-4">
         <Typography variant="h4" component="h1" className="font-bold flex items-center gap-2">
           {icon}
@@ -163,53 +170,22 @@ const PokemonList = ({
         </Typography>
       </Box>
 
-      {/* Empty state */}
-      {displayedPokemon.length === 0 ? (
+      {pokemon.length === 0 ? (
         <Typography variant="body1" color="text.secondary" className="text-center py-12">
           {showOnlyRoster ? 'Your roster is empty. Add some Pokémon! ❤️' : emptyMessage}
         </Typography>
       ) : (
         <>
-          {/* Pagination - Only show for non-roster view */}
-          {!hidePagination && !showOnlyRoster && totalPages > 1 && (
-            <Box className="flex justify-center mt-8 pb-4">
-              <Pagination
-                count={totalPages}
-                page={Math.floor(offset / limit) + 1}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
-                showLastButton
-                className="pokemon-pagination"
-              />
-            </Box>
-          )}
+          {renderPagination()}
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayedPokemon.map(p => (
+            {pokemon.map(p => (
               <PokemonCard key={p.id} pokemon={p} onClick={() => handlePokemonClick(p)} />
             ))}
           </Box>
-
-          {/* Pagination - Only show for non-roster view */}
-          {!hidePagination && !showOnlyRoster && totalPages > 1 && (
-            <Box className="flex justify-center mt-8 pb-4">
-              <Pagination
-                count={totalPages}
-                page={Math.floor(offset / limit) + 1}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
-                showLastButton
-                className="pokemon-pagination"
-              />
-            </Box>
-          )}
+          {renderPagination()}
         </>
       )}
 
-      {/* Snackbar for feedback */}
       {showSnackbar && (
         <Snackbar
           open={snackbar.open}

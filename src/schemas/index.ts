@@ -37,13 +37,13 @@ export const pokemonDetailSchema = z.object({
   name: z.string(),
   height: z.number(),
   weight: z.number(),
-  base_experience: z.number(),
+  base_experience: z.number().nullable(),
   types: z.array(
     z.object({
       slot: z.number(),
       type: z.object({
         name: z.string(),
-        url: z.string().url()
+        url: z.url()
       })
     })
   ),
@@ -87,8 +87,26 @@ export const pokemonListResponseSchema = z.object({
   results: z.array(pokemonListItemSchema)
 });
 
+export const scoreSchema = z.object({
+  userId: z.string(),
+  score: z.number().int().min(0),
+  wins: z.number().int().min(0),
+  losses: z.number().int().min(0),
+  pokemonName: z.string(),
+  pokemonId: z.number().int().positive()
+});
+
+export const leaderboardEntrySchema = scoreSchema.extend({
+  _id: z.string(),
+  username: z.string(),
+  date: z.string(),
+  winRate: z.number().min(0).max(100)
+});
+
 export type LoginFormData = z.infer<typeof LoginSchema>;
 export type RegisterFormData = z.infer<typeof RegisterSchema>;
 export type PokemonListItem = z.infer<typeof pokemonListItemSchema>;
 export type PokemonDetail = z.infer<typeof pokemonDetailSchema>;
 export type PokemonListResponse = z.infer<typeof pokemonListResponseSchema>;
+export type Score = z.infer<typeof scoreSchema>;
+export type LeaderboardEntry = z.infer<typeof leaderboardEntrySchema>;
