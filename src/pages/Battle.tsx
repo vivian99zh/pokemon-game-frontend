@@ -22,16 +22,18 @@ import { POKE_API_URL } from '../config';
 import { pokemonDetailSchema } from '../schemas';
 import { useRoster } from '../hooks/useRoster';
 import { useAuth } from '../contexts/AuthProvider';
-import { leaderboardService } from '../services/leaderboardService';
+
 import { calculateDamage } from '../utils/battleUtils';
 import type { BattlePokemon } from '../types';
 import type { Score } from '../schemas';
+import { GAME_URL } from '../config';
 
 const Battle = () => {
   const navigate = useNavigate();
+  const { getHeaders } = useAuth();
   //https://pokeapi.co/api/v2/pokemon/1026 till end not found
   const totalPokemonCount = 1025;
-  const { userId } = useAuth();
+  //const { userId } = useAuth();
   const { rosterPokemon } = useRoster();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,15 +70,24 @@ const Battle = () => {
   const saveScore = async (won: boolean): Promise<void> => {
     try {
       const scoreData: Score = {
-        userId: userId ? String(userId) : '1',
-        score: won ? 10 : 0,
-        wins: won ? 1 : 0,
-        losses: won ? 0 : 1,
-        pokemonName: battlePokemon?.name || '',
-        pokemonId: battlePokemon?.id || 0
+        score: won ? 10 : 0
+        // wins: won ? 1 : 0,
+        // losses: won ? 0 : 1,
+        // pokemonName: battlePokemon?.name || '',
       };
 
-      await leaderboardService.postScore(scoreData);
+      const res = await fetch(`${GAME_URL}/leaderboard`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(scoreData)
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to save scores');
+      }
+
+      await res.json();
 
       setSnackbar({
         open: true,

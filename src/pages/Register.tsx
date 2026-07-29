@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Card, CardContent, Typography, TextField, Button, Alert, CircularProgress, Box } from '@mui/material';
 import { useAuth } from '../contexts/AuthProvider';
-import { API_URL } from '../config';
+import { AUTH_URL } from '../config';
 import { RegisterSchema } from '../schemas';
 import type { RegisterFormData } from '../schemas';
 
@@ -10,7 +10,7 @@ const Register = () => {
   const navigate = useNavigate();
   const { login, getHeaders } = useAuth();
   const [formData, setFormData] = useState<RegisterFormData>({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -89,12 +89,12 @@ const Register = () => {
       const validatedData = result.data;
 
       const userData = {
-        name: validatedData.name,
+        username: validatedData.username,
         email: validatedData.email,
         password: validatedData.password
       };
 
-      const res = await fetch(`${API_URL}/users`, {
+      const res = await fetch(`${AUTH_URL}/auth/register`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(userData)
@@ -104,8 +104,8 @@ const Register = () => {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || 'Registration failed');
       }
-      const data = await res.json();
-      const { token, user } = data;
+      const responseData = await res.json();
+      const { token, user } = responseData.data;
       login(token, user.id);
       setSuccess(true);
 
@@ -144,9 +144,9 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <TextField
               fullWidth
-              label="Full Name"
-              name="name"
-              value={formData.name}
+              label="Username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
               onBlur={handleBlur}
               required
@@ -180,7 +180,9 @@ const Register = () => {
               required
               disabled={loading}
               error={!!fieldErrors.password}
-              helperText={fieldErrors.password || 'Must be at least 8 characters with uppercase, lowercase, and number'}
+              helperText={
+                fieldErrors.password || 'Must be at least 12 characters with uppercase, lowercase, and number'
+              }
             />
 
             <TextField
