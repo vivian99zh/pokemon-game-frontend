@@ -7,11 +7,11 @@ export const LoginSchema = z.object({
 
 export const RegisterSchema = z
   .object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    username: z.string().min(2, 'Username must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters')
+      .min(12, 'Password must be at least 12 characters')
       .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
       .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
       .regex(/[0-9]/, 'Password must contain at least one number'),
@@ -88,17 +88,23 @@ export const pokemonListResponseSchema = z.object({
 });
 
 export const scoreSchema = z.object({
-  userId: z.string(),
-  score: z.number().int().min(0),
-  wins: z.number().int().min(0),
-  losses: z.number().int().min(0),
-  pokemonName: z.string(),
-  pokemonId: z.number().int().positive()
+  //userId: z.string(),
+  score: z.number().int().min(0)
+  // wins: z.number().int().min(0),
+  // losses: z.number().int().min(0),
+  // pokemonName: z.string(),
+  // pokemonId: z.number().int().positive()
+});
+
+export const leaderboardUserSchema = z.object({
+  id: z.string(),
+  username: z.string().optional()
 });
 
 export const leaderboardEntrySchema = scoreSchema.extend({
-  _id: z.string(),
-  username: z.string(),
+  rank: z.string(),
+  user: leaderboardUserSchema,
+  score: z.number().min(0).max(100000),
   date: z.string(),
   winRate: z.number().min(0).max(100)
 });

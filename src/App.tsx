@@ -1,7 +1,7 @@
 import { AuthProvider } from './contexts/AuthProvider';
 import { Routes, Route, Navigate } from 'react-router';
 import Home from './pages/Home';
-import LeaderBoard from './pages/LeaderBoard';
+import Leaderboard from './pages/LeaderBoard';
 import Battle from './pages/Battle';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/pokemon/:id" element={<PokemonDetails />} />
-          <Route path="/leaderboard" element={<LeaderBoard />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route
             path="/battle"
             element={

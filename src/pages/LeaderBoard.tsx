@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import {
   Box,
@@ -18,33 +18,55 @@ import {
   Button
 } from '@mui/material';
 import { EmojiEvents, Refresh } from '@mui/icons-material';
-import { leaderboardService } from '../services/leaderboardService';
 import type { LeaderboardEntry } from '../schemas';
+import { useAuth } from '../contexts/AuthProvider';
+import { GAME_URL } from '../config';
 
 const Leaderboard = () => {
   const navigate = useNavigate();
-
+  const { getHeaders } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [page, setPage] = useState(0);
+  const [totalData, setTotalData] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await leaderboardService.getLeaderboard();
+      const queryParams = new URLSearchParams({
+        page: String(page + 1),
+        limit: String(rowsPerPage)
+      });
+
+      const res = await fetch(`${GAME_URL}/leaderboard?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to fetch leaderboard');
+      }
+
+      const responseData = await res.json();
+
+      const { data, meta } = responseData;
+
+      setTotalData(meta.total);
+
       setLeaderboard(data);
     } catch (err) {
       setError('Failed to load leaderboard');
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, rowsPerPage]);
 
   useEffect(() => {
     fetchLeaderboard();
-  }, []);
+  }, [fetchLeaderboard]);
 
   if (loading) {
     return (
@@ -78,9 +100,8 @@ const Leaderboard = () => {
           Leaderboard
         </Typography>
       </Box>
-
-      {leaderboard.length === 0 ? (
-        <Card className="p-8 text-center">
+      {totalData === 0 ? (
+        <Card className="p-D8 text-center">
           <Typography className="font-bold text-2xl mb-2">No Scores Yet</Typography>
           <Typography variant="body1" color="text.secondary" className="mb-4">
             Start battling to earn points!
@@ -97,33 +118,32 @@ const Leaderboard = () => {
                 <TableRow sx={{ '& .MuiTableCell-root': { color: 'primary.main', fontWeight: 'bold' } }}>
                   <TableCell>Rank</TableCell>
                   <TableCell>Trainer</TableCell>
-                  <TableCell>Pokémon</TableCell>
+                  {/* <TableCell>Pokémon</TableCell> */}
                   <TableCell align="center">Score</TableCell>
-                  <TableCell align="center">W/L</TableCell>
-                  <TableCell align="center">Win Rate</TableCell>
+                  {/* <TableCell align="center">W/L</TableCell>
+                  <TableCell align="center">Win Rate</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {leaderboard.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((entry, index) => {
-                  const rank = page * rowsPerPage + index + 1;
+                {leaderboard.map(entry => {
                   return (
-                    <TableRow key={entry._id} className="hover:bg-gray-50">
-                      <TableCell>#{rank}</TableCell>
-                      <TableCell>{entry.username}</TableCell>
-                      <TableCell className="capitalize">{entry.pokemonName}</TableCell>
+                    <TableRow key={entry.rank} className="hover:bg-gray-50">
+                      <TableCell>#{entry.rank}</TableCell>
+                      <TableCell>{entry.user.username}</TableCell>
+                      {/* <TableCell className="capitalize">{entry.pokemonName}</TableCell> */}
                       <TableCell align="center" className="font-bold text-orange-500">
                         {entry.score}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {entry.wins}W / {entry.losses}L
-                      </TableCell>
-                      <TableCell align="center">
+                      </TableCell> */}
+                      {/* <TableCell align="center">
                         <Chip
                           label={`${entry.winRate}%`}
                           size="small"
                           color={entry.winRate >= 60 ? 'success' : entry.winRate >= 40 ? 'warning' : 'error'}
                         />
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   );
                 })}
@@ -133,7 +153,7 @@ const Leaderboard = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={leaderboard.length}
+            count={totalData}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(_, newPage) => setPage(newPage)}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Card, CardContent, Typography, TextField, Button, Alert, CircularProgress, Box } from '@mui/material';
 import { useAuth } from '../contexts/AuthProvider';
-import { API_URL } from '../config';
+import { AUTH_URL } from '../config';
 import { LoginSchema } from '../schemas';
 import type { LoginFormData } from '../schemas';
 
@@ -84,7 +84,7 @@ const Login = () => {
 
       const validatedData = result.data;
 
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${AUTH_URL}/auth/login`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(validatedData)
@@ -94,9 +94,8 @@ const Login = () => {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || 'Invalid email or password');
       }
-
-      const data = await res.json();
-      const { token, user } = data;
+      const responseData = await res.json();
+      const { token, user } = responseData.data;
 
       login(token, user.id);
       navigate('/');
