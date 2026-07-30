@@ -5,10 +5,12 @@ import ScaleIcon from '@mui/icons-material/Scale';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRoster } from '../hooks/useRoster';
 import { TYPE_COLORS as typeColors, type PokemonCardProps } from '../types';
+import { useTheme } from '../contexts/ThemeProvider';
 
 const PokemonCard = ({ pokemon, onClick }: PokemonCardProps) => {
   const { isAuthenticated } = useAuth();
   const { isInRoster, addToRoster, removeFromRoster } = useRoster();
+  const { darkMode } = useTheme();
   const sprite =
     pokemon.sprites.other?.['official-artwork']?.front_default ||
     pokemon.sprites.front_default ||
@@ -36,7 +38,7 @@ const PokemonCard = ({ pokemon, onClick }: PokemonCardProps) => {
     >
       <CardContent>
         {/* Pokemon Image */}
-        <Box className="flex justify-center items-center bg-gray-50 rounded-lg p-4 mb-4">
+        <Box className={`flex justify-center items-center rounded-lg p-4 mb-4 ${darkMode ? '#121212' : 'bg-gray-50'}`}>
           <img
             src={sprite}
             alt={pokemon.name}

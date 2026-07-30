@@ -9,37 +9,47 @@ import MyRoster from './pages/MyRoster';
 import PokemonDetails from './pages/PokemonDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
+import { ThemeProvider } from './contexts/ThemeProvider';
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="/pokemon/:id" element={<PokemonDetails />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route
-            path="/battle"
-            element={
-              <ProtectedRoute>
-                <Battle />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/my-roster"
-            element={
-              <ProtectedRoute>
-                <MyRoster />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Route>
-      </Routes>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+            <Route path="/pokemon/:id" element={<PokemonDetails />} />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/battle"
+              element={
+                <ProtectedRoute>
+                  <Battle />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/my-roster"
+              element={
+                <ProtectedRoute>
+                  <MyRoster />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Route>
+        </Routes>
+      </AuthProvider>{' '}
+    </ThemeProvider>
   );
 }
 

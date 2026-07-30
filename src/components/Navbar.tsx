@@ -16,11 +16,13 @@ import Button from '@mui/material/Button';
 import { useAuth } from '../contexts/AuthProvider';
 import { useNavigate } from 'react-router';
 import type { NavItem } from '../types';
-
+import { Brightness4, Brightness7 } from '@mui/icons-material';
+import { useTheme } from '../contexts/ThemeProvider';
 const drawerWidth = 240;
 
 function Navbar({ window }: { window?: () => Window }) {
   const { isAuthenticated, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -28,11 +30,9 @@ function Navbar({ window }: { window?: () => Window }) {
     navigate('/');
   };
 
-  const navItems: NavItem[] = [
-    { label: 'Home', path: '/' },
-    { label: 'Leaderboard', path: '/leaderboard' }
-  ];
+  const navItems: NavItem[] = [{ label: 'Home', path: '/' }];
   if (isAuthenticated) {
+    navItems.push({ label: 'Leaderboard', path: '/leaderboard' });
     navItems.push({ label: 'Battle', path: '/battle' });
     navItems.push({ label: 'My Roster', path: '/my-roster' });
     navItems.push({ label: 'Logout', path: '#', action: handleLogout });
@@ -86,6 +86,13 @@ function Navbar({ window }: { window?: () => Window }) {
           >
             <MenuIcon />
           </IconButton>
+          <IconButton
+            onClick={toggleDarkMode}
+            color="inherit"
+            className="ml-2 text-white hover:bg-white/10 rounded-full p-2 transition-colors"
+          >
+            {darkMode ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
           <Typography
             variant="h6"
             component="div"
@@ -94,6 +101,7 @@ function Navbar({ window }: { window?: () => Window }) {
           >
             Pokémon
           </Typography>
+
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map(item => (
               <Button

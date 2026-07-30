@@ -14,17 +14,18 @@ import {
   Alert,
   CircularProgress,
   Paper,
-  Chip,
   Button
 } from '@mui/material';
 import { EmojiEvents, Refresh } from '@mui/icons-material';
 import type { LeaderboardEntry } from '../schemas';
 import { useAuth } from '../contexts/AuthProvider';
 import { GAME_URL } from '../config';
+import { useTheme } from '../contexts/ThemeProvider';
 
 const Leaderboard = () => {
   const navigate = useNavigate();
   const { getHeaders } = useAuth();
+  const { darkMode } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -114,14 +115,13 @@ const Leaderboard = () => {
         <Card>
           <TableContainer component={Paper}>
             <Table>
-              <TableHead className="bg-gray-50 ">
+              <TableHead className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                 <TableRow sx={{ '& .MuiTableCell-root': { color: 'primary.main', fontWeight: 'bold' } }}>
                   <TableCell>Rank</TableCell>
                   <TableCell>Trainer</TableCell>
                   {/* <TableCell>Pokémon</TableCell> */}
                   <TableCell align="center">Score</TableCell>
-                  {/* <TableCell align="center">W/L</TableCell>
-                  <TableCell align="center">Win Rate</TableCell> */}
+                  <TableCell align="center">Date</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -134,16 +134,7 @@ const Leaderboard = () => {
                       <TableCell align="center" className="font-bold text-orange-500">
                         {entry.score}
                       </TableCell>
-                      {/* <TableCell align="center">
-                        {entry.wins}W / {entry.losses}L
-                      </TableCell> */}
-                      {/* <TableCell align="center">
-                        <Chip
-                          label={`${entry.winRate}%`}
-                          size="small"
-                          color={entry.winRate >= 60 ? 'success' : entry.winRate >= 40 ? 'warning' : 'error'}
-                        />
-                      </TableCell> */}
+                      <TableCell align="center">{new Date(entry.date).toLocaleString()}</TableCell>
                     </TableRow>
                   );
                 })}
