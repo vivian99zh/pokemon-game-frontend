@@ -23,7 +23,7 @@ import { pokemonDetailSchema } from '../schemas';
 import { useRoster } from '../hooks/useRoster';
 import { useAuth } from '../contexts/AuthProvider';
 
-import { calculateDamage } from '../utils/battleUtils';
+import { calculateDamage, calculateScore } from '../utils/battleUtils';
 import type { BattlePokemon } from '../types';
 import type { Score } from '../schemas';
 import { GAME_URL } from '../config';
@@ -69,10 +69,15 @@ const Battle = () => {
 
   const saveScore = async (won: boolean): Promise<void> => {
     try {
+      const score = calculateScore(
+        won,
+        battlePokemon?.currentHp || 0,
+        battlePokemon?.maxHp || 100,
+        enemyPokemon?.currentHp || 0,
+        enemyPokemon?.maxHp || 100
+      );
       const scoreData: Score = {
-        score: won ? 10 : 0
-        // wins: won ? 1 : 0,
-        // losses: won ? 0 : 1,
+        score: score
         // pokemonName: battlePokemon?.name || '',
       };
 
@@ -91,7 +96,7 @@ const Battle = () => {
 
       setSnackbar({
         open: true,
-        message: won ? '🏆 Score saved! +10 points' : 'Better luck next time!',
+        message: won ? `🏆 Score saved ${score} points!` : `Better luck next time! Score saved ${score} points!`,
         severity: 'success'
       });
     } catch (err) {
@@ -266,6 +271,7 @@ const Battle = () => {
                   selectedPokemonId === p.id ? 'ring-2 ring-info' : ''
                 }`}
                 onClick={() => setSelectedPokemonId(p.id)}
+                onDoubleClick={startBattle}
               >
                 <CardContent className="text-center">
                   <img

@@ -42,7 +42,7 @@ export type BattlePokemon = PokemonDetail & {
   maxHp: number;
 };
 
-export const TYPE_COLORS = {
+export const TYPE_COLORS: Record<string, string> = {
   normal: colors.stone[400],
   fire: colors.orange[500],
   water: colors.blue[500],

@@ -91,3 +91,29 @@ export const calculateDamage = (
     effectivenessMessage: message
   };
 };
+
+// Calculate score with result and health percentage
+export const calculateScore = (
+  won: boolean,
+  playerHealth: number,
+  maxHealth: number,
+  enemyHealth: number,
+  maxEnemyHealth: number
+): number => {
+  let score = 0;
+
+  // 1. Win bonus (40 points)
+  if (won) {
+    score += 40;
+  }
+
+  // 2. Health bonus (0-30 points based on remaining health)
+  const healthPercentage = Math.max(0, (playerHealth / maxHealth) * 100);
+  score += Math.floor((healthPercentage / 100) * 30);
+
+  // 3. Damage bonus (0-30 points based on damage dealt to enemy)
+  const damageDealt = maxEnemyHealth - enemyHealth;
+  const damagePercentage = Math.min(1, damageDealt / maxEnemyHealth);
+  score += Math.floor(damagePercentage * 30);
+  return score;
+};
